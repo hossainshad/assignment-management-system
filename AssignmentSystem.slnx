@@ -1,0 +1,8 @@
+<Solution>
+  <Folder Name="/backend/">
+    <Project Path="backend/AssignmentSystem.API/AssignmentSystem.API.csproj" />
+    <Project Path="backend/AssignmentSystem.Core/AssignmentSystem.Core.csproj" />
+    <Project Path="backend/AssignmentSystem.Infrastructure/AssignmentSystem.Infrastructure.csproj" />
+    <Project Path="backend/AssignmentSystem.Tests/AssignmentSystem.Tests.csproj" />
+  </Folder>
+</Solution>
