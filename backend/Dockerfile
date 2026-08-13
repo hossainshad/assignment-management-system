@@ -11,8 +11,8 @@ FROM mcr.microsoft.com/dotnet/aspnet:8.0
 WORKDIR /app
 COPY --from=build /app/out .
 
-EXPOSE 8080
-ENV ASPNETCORE_URLS=http://+:8080
-ENV ASPNETCORE_ENVIRONMENT=Development
 
-ENTRYPOINT ["dotnet", "AssignmentSystem.API.dll"]
+EXPOSE 8080
+ENV ASPNETCORE_ENVIRONMENT=Production
+
+ENTRYPOINT ["sh", "-c", "dotnet AssignmentSystem.API.dll --urls=http://+:${PORT:-8080}"]
