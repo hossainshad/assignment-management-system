@@ -68,9 +68,9 @@ builder.Services.AddCors(options =>
     options.AddPolicy("FrontendPolicy", policy =>
     {
         policy.WithOrigins(
-                "http://localhost:3000",          // local dev
-                "https://your-vercel-app.vercel.app" // update this after deploying
-            )
+            "http://localhost:3000",
+            "https://assignment-management-system-rosy.vercel.app"
+        )
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
@@ -133,5 +133,5 @@ app.UseCors("FrontendPolicy");
 app.UseAuthentication();    // must come before UseAuthorization
 app.UseAuthorization();
 app.MapControllers();
-app.MapGet("/health", () => Results.Ok("healthy"));
+app.MapGet("/health", () => Results.Ok("healthy")); 
 app.Run();
