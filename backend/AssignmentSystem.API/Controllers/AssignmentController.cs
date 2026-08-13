@@ -205,15 +205,34 @@ public class AssignmentController : ControllerBase
         return Ok(assignments);
     }
 
-    // ── Student: Get Assignments For My Class ──────────────────────────────────
+    // GET /api/assignment/teacher/subjects
+        [HttpGet("teacher/subjects")]
+        [Authorize(Roles = "Teacher")]
+        public async Task<IActionResult> GetMySubjects()
+        {
+            var teacherId = GetUserId();
 
-    // GET /api/assignment/class
-    [HttpGet("class")]
-    [Authorize(Roles = "Student")]
-    public async Task<IActionResult> GetClassAssignments()
-    {
+            var subjects = await _db.Subjects
+                .Include(s => s.Class)
+                .Where(s => s.TeacherId == teacherId)
+                .Select(s => new
+                {
+                    s.Id,
+                    s.Name,
+                    s.Code,
+                    Class = s.Class.Name + " " + s.Class.Section
+                })
+                .ToListAsync();
+
+            return Ok(subjects);
+        }
+
+        // GET /api/assignment/class
+        [HttpGet("class")]
+        [Authorize(Roles = "Student")]
+        public async Task<IActionResult> GetClassAssignments()
+        {
         var studentId = GetUserId();
-
         // Get all classes the student is enrolled in
         var classIds = await _db.ClassEnrollments
             .Where(e => e.StudentId == studentId)
