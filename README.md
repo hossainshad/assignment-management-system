@@ -2,6 +2,12 @@
 
 A full-stack role-based web application for managing assignments and submissions in a school or college. Built as part of the OnnoRokom Projukti Assistant Software Engineer recruitment assignment.
 
+## Live Demo
+
+- **Frontend**: https://assignment-management-system-rho.vercel.app/login
+- **Backend API**: https://assignment-management-system-production-f864.up.railway.app
+- **Swagger UI**: https://assignment-management-system-production-f864.up.railway.app/swagger
+
 ## Tech Stack
 
 | Layer | Technology |
@@ -12,6 +18,7 @@ A full-stack role-based web application for managing assignments and submissions
 | Auth | JWT-based authentication, role-based authorization |
 | Tests | xUnit, EF Core InMemory |
 | Docs | Swagger / OpenAPI |
+| Containerization | Docker |
 
 ## User Roles
 
@@ -27,26 +34,43 @@ assignment-management-system/
 │   ├── AssignmentSystem.API/            # Controllers, middleware, entry point
 │   ├── AssignmentSystem.Core/           # Entities, DTOs
 │   ├── AssignmentSystem.Infrastructure/ # EF Core, DbContext, services
-│   └── AssignmentSystem.Tests/          # xUnit unit tests
+│   ├── AssignmentSystem.Tests/          # xUnit unit tests
+│   └── Dockerfile                       # Docker config for deployment
 ├── frontend/                            # Next.js 14 app (App Router)
+├── database/
+│   ├── schema.sql                       # Database schema only
+│   └── backup.sql                       # Full database dump with seed data
 ├── .env.example                         # Environment variable reference
 └── README.md
 ```
+
+## Demo Credentials
+
+| Role    | Email              | Password    |
+|---------|--------------------|-------------|
+| Admin   | admin@school.com   | Admin@123   |
+| Teacher | teacher@school.com | Teacher@123 |
+| Student | student@school.com | Student@123 |
+
+These accounts are seeded automatically on first run. No manual setup needed.
 
 ## Prerequisites
 
 - .NET 10 SDK
 - Node.js 18+
 - PostgreSQL
+- Docker (optional)
 
-## Database Setup
+## Local Setup
+
+### 1. Database Setup
 
 ```bash
 sudo -u postgres psql -c "CREATE DATABASE assignment_system;"
 sudo -u postgres psql -c "ALTER USER postgres WITH PASSWORD 'postgres';"
 ```
 
-## Backend Setup
+### 2. Backend Setup
 
 ```bash
 cd backend
@@ -71,7 +95,7 @@ dotnet run --project AssignmentSystem.API
 - API runs at: `http://localhost:5038`
 - Swagger UI: `http://localhost:5038/swagger`
 
-## Frontend Setup
+### 3. Frontend Setup
 
 ```bash
 cd frontend
@@ -88,6 +112,34 @@ npm run dev
 
 - Frontend runs at: `http://localhost:3000`
 
+## Docker Setup (Backend only)
+
+```bash
+cd backend
+
+# Build the image
+docker build -t assignment-system-api .
+
+# Run the container
+docker run -p 8080:8080 \
+  -e DATABASE_URL=postgresql://postgres:postgres@host.docker.internal:5432/assignment_system \
+  -e JwtSettings__Secret=your-secret-key-min-32-chars \
+  -e JwtSettings__Issuer=AssignmentSystem \
+  -e JwtSettings__Audience=AssignmentSystemUsers \
+  -e JwtSettings__ExpiryInDays=7 \
+  -e ASPNETCORE_ENVIRONMENT=Development \
+  assignment-system-api
+```
+
+## Database Setup from Backup
+
+To restore the database from the provided backup:
+
+```bash
+sudo -u postgres psql -c "CREATE DATABASE assignment_system;"
+sudo -u postgres psql assignment_system < database/backup.sql
+```
+
 ## Running Tests
 
 ```bash
@@ -96,16 +148,6 @@ dotnet test AssignmentSystem.Tests/AssignmentSystem.Tests.csproj
 ```
 
 Expected: 9 tests, 0 failed.
-
-## Demo Credentials
-
-| Role    | Email              | Password    |
-|---------|--------------------|-------------|
-| Admin   | admin@school.com   | Admin@123   |
-| Teacher | teacher@school.com | Teacher@123 |
-| Student | student@school.com | Student@123 |
-
-These accounts are seeded automatically on first run. No manual setup needed.
 
 ## API Endpoints
 
@@ -144,7 +186,7 @@ These accounts are seeded automatically on first run. No manual setup needed.
 
 ## Known Limitations
 
-- File attachments not supported - text answers only
+- File attachments not supported — text answers only
 - No email notifications
 - No pagination (suitable for demo scale)
-- Npgsql does not yet have a stable release for EF Core 10 — version 9.x is used, which causes a non-breaking version mismatch warning at build time
+- Npgsql does not yet have a stable EF Core 10 release — version 9.x is used with EF Core 10, which causes a non-breaking build warning
