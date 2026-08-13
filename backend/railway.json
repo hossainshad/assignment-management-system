@@ -1,11 +1,7 @@
 {
   "$schema": "https://schema.railway.com/railway.json",
-  "build": {
-    "builder": "NIXPACKS",
-    "buildCommand": "dotnet publish AssignmentSystem.API/AssignmentSystem.API.csproj -c Release -o out"
-  },
   "deploy": {
-    "startCommand": "dotnet out/AssignmentSystem.API.dll",
-    "healthcheckPath": "/swagger"
+    "healthcheckPath": "/api/auth/login",
+    "healthcheckTimeout": 300
   }
 }
