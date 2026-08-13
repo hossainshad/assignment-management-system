@@ -67,10 +67,12 @@ builder.Services.AddCors(options =>
 {
     options.AddPolicy("FrontendPolicy", policy =>
     {
-        policy.WithOrigins(
-            "http://localhost:3000",
-            "https://assignment-management-system-rosy.vercel.app"
-        )
+        policy.SetIsOriginAllowed(origin =>
+                {
+                    var host = new Uri(origin).Host;
+                    return host == "localhost" ||
+                           host.EndsWith(".vercel.app");
+                })
             .AllowAnyHeader()
             .AllowAnyMethod();
     });
