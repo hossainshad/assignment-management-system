@@ -10,10 +10,10 @@ var builder = WebApplication.CreateBuilder(args);
 
 // ── Database ──────────────────────────────────────────────────────────────────
 // Tell EF Core to use PostgreSQL with our connection string from appsettings.json
+var connectionString = Environment.GetEnvironmentVariable("DATABASE_URL") 
+    ?? builder.Configuration.GetConnectionString("DefaultConnection");
 builder.Services.AddDbContext<AppDbContext>(options =>
-    options.UseNpgsql(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-// ── JWT Authentication ────────────────────────────────────────────────────────
+    options.UseNpgsql(connectionString));
 // Read JWT config from appsettings.json
 var jwtSecret = builder.Configuration["JwtSettings:Secret"]!;
 var jwtIssuer = builder.Configuration["JwtSettings:Issuer"]!;
